@@ -22,11 +22,56 @@ library(ggplot2)
 
 ## Problem a
 
-```{r cars}
+```{r}
 data <- read.csv("College.csv") |> na.omit()
+
+set.seed(2026)
+data_split <- initial_split(data, prop = 0.8)
+
+training_data <- training(data_split)
+testing_data <- testing(data_split)
+
+fit.ss <- smooth.spline(training_data$Top10perc, training_data$Outstate)
+
+Top10perc.grid <- seq(from = min(training_data$Top10perc), 
+                      to = max(training_data$Top10perc), by = 1)
+p <- ggplot(data = training_data, aes(x = Top10perc, y = Outstate)) + 
+  geom_point(color = rgb(.2, .4, .2, .5))
+
+df_values <- seq(2, 20, by = 1)
+pred_list = list()
+
+for (df_ss in df_values) {
+  fit <- smooth.spline(training_data$Top10perc, training_data$Outstate, 
+                       df = df_ss)
+  pred <- predict(fit, x = Top10perc.grid)
+  pred_list[[as.character(df_ss)]]  <- data.frame(
+    Top10perc1 = Top10perc.grid, Outstate1 = pred$y, df = as.factor(df_ss))
+}
+
+pred_df_all <- bind_rows(pred_list)
+
+p + geom_line(aes(x = Top10perc1, y = Outstate1, color = df, group = df), 
+              data = pred_df_all) + theme_bw() + labs(color = "df")
 ```
+I fitted the degree of freedom from 2 to 20, it can be seen from the plot that as the degree of freedom go larger, the fitted curve become more wiggly and overfitting. With a low degree of freedom (2 to 4), the fitted curve is very smooth and almost straight, indicating that it might be underfitting and miss the non-linear pattern. 
+
+```{r}
+fit.ss$df
+
+pred.ss <- predict(fit.ss, x = Top10perc.grid)
+pred.ss.df <- data.frame(Top10perc1 = Top10perc.grid, Outstate1 = pred.ss$y)
+
+p + geom_line(aes(x = Top10perc1, y = Outstate1), 
+              data = pred.ss.df,
+              color = rgb(.8, .1, .1, 1)) + theme_bw() 
+```
+The selected df is `r fit.ss$df`. Generalized cross-validation is used to select the degree of freedom because it efficiently approximates leave-one-out cross-validation error and is the standard approach for smoothing spline tuning.
 
 ## Problem b
+```{r}
+
+```
 
 ## Problem c
 
