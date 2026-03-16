@@ -1,0 +1,35 @@
+---
+title: "P8106_HW2_SY3352"
+author: "Su Yan"
+date: "2026-03-15"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = T, message = FALSE, results='hide', warning=FALSE}
+library(caret) 
+library(tidymodels)
+library(splines) 
+library(mgcv) 
+library(pdp) 
+library(earth) 
+library(tidyverse)
+library(ggplot2)
+```
+
+## Problem a
+
+```{r cars}
+data <- read.csv("College.csv") |> na.omit()
+```
+
+## Problem b
+
+## Problem c
+
+## Problem d
+
+## Problem e
